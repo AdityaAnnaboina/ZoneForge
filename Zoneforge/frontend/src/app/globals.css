@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #020617;
+  --foreground: #f8fafc;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+}
+
+@layer utilities {
+  .aws-table-header {
+    background-color: #F2F3F3;
+    border-bottom: 2px solid #d1d5db;
+  }
+  .aws-btn-primary {
+    background-color: #FF9900;
+    color: #000000;
+    font-weight: 500;
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+  }
+  .aws-btn-primary:hover {
+    background-color: #e8890a;
+  }
+  .aws-btn-secondary {
+    background-color: #ffffff;
+    border: 1px solid #d1d5db;
+    color: #374151;
+    font-weight: 500;
+  }
+  .aws-btn-secondary:hover {
+    background-color: #f9fafb;
+  }
+  .aws-btn-danger {
+    background-color: #dc2626;
+    color: #ffffff;
+    font-weight: 500;
+  }
+  .aws-btn-danger:hover {
+    background-color: #b91c1c;
+  }
+  .aws-input {
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    padding-top: 0.375rem;
+    padding-bottom: 0.375rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+  }
+  .aws-input:focus {
+    border-color: transparent;
+    outline: none;
+    box-shadow: 0 0 0 2px #FF9900;
+  }
+  .aws-card {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  }
+  .aws-link {
+    color: #0073bb;
+    cursor: pointer;
+  }
+  .aws-link:hover {
+    color: #005b94;
+    text-decoration-line: underline;
+  }
+}
+
