@@ -1,41 +1,71 @@
-# ZoneForge — DNS Management Console
+# 🌐 ZoneForge — Enterprise DNS Management Console
 
-> A functional clone of AWS Route53 built with Next.js, FastAPI, and PostgreSQL / SQLite
+[![Next.js](https://img.shields.io/badge/Next.js-14.x-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.109.x-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![SQLite](https://img.shields.io/badge/SQLite-3-003B57?style=for-the-badge&logo=sqlite&logoColor=white)](https://www.sqlite.org/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
-### 🚀 Live Deployments
+> A high-fidelity, pixel-perfect clone of the **AWS Route 53** Management Console. Engineered as a full-stack monorepo featuring a responsive Next.js frontend, a high-performance FastAPI backend, and a dual-database engine (SQLite for local development, PostgreSQL for production).
+
+---
+
+## 🚀 Live Deployments
+
 * **Frontend Console**: [https://zone-forge.vercel.app/](https://zone-forge.vercel.app/)
 * **Backend REST API**: [https://zoneforge-backend.onrender.com/](https://zoneforge-backend.onrender.com/)
-
-
-## Features
-- [x] **Full Authentication**: Secure signup, login, and session checks backed by JWT (JSON Web Tokens) cookies and Edge middleware page protection.
-- [x] **Hosted Zones CRUD**: Create, read, update, and delete hosted zones (supporting Public and Private zone types).
-- [x] **DNS Records CRUD**: Full control over DNS records (`A`, `AAAA`, `CNAME`, `TXT`, `MX`, `NS`, `PTR`, `SRV`, `CAA`) inside any hosted zone.
-- [x] **Automatic Record Calculations**: Automatic updating of hosted zone `record_count` attributes upon creating or deleting DNS records.
-- [x] **Advanced Filtering & Pagination**: Paginated listing of zones and records with real-time text query search and type filtering.
-- [x] **Rich AWS Console UX**: Replicated style layouts, sidebars, headers, skeleton loaders, and modals tailored to the AWS Route53 style guide.
-- [x] **Dynamic Component Imports**: Modals imported dynamically on-demand, reducing initial JavaScript bundle weights.
-- [x] **Resiliency**: High accessibility standards, custom Error Boundaries, and specific loading state handlers.
+* **API Documentation**: [https://zoneforge-backend.onrender.com/docs](https://zoneforge-backend.onrender.com/docs) (Interactive Swagger UI)
 
 ---
 
-## Tech Stack
+## 📝 Project Overview
 
-| Layer | Technology | Purpose |
-| :--- | :--- | :--- |
-| **Frontend** | Next.js 14 (TypeScript) | React Framework with App Router and Edge Middleware |
-| **Styling** | Tailwind CSS + Vanilla CSS | Utility-first styling with AWS theme colors |
-| **State** | Zustand | Client-side user auth session & layout state store |
-| **Data Fetching** | TanStack Query (v5) | Server state management, auto-caching, and query invalidation |
-| **Forms** | React Hook Form + Zod | Schema validation and input handling |
-| **Backend** | FastAPI | Python high-performance RESTful Web Framework |
-| **Database** | SQLite + SQLModel | Persistent relational engine and SQLAlchemy ORM |
-| **Auth** | JWT (python-jose + passlib) | Token-based auth and secure bcrypt hashing |
+**ZoneForge** is a functional recreation of the AWS Route 53 web interface. It simulates the core workflows of cloud DNS management, focusing heavily on delivering an authentic AWS User Experience (UX).
+
+While actual DNS packet resolution is out of scope for this assignment, the project implements complete, secure, and persistent CRUD management of **Hosted Zones** and **DNS Records** (supporting 9 standard record types) under a mocked AWS IAM authentication session.
 
 ---
 
-## Architecture Overview
+## 📸 Screenshots
 
+*(Mocked layout of the visual interface. Add your actual screenshots here)*
+
+| AWS-Style Login | Hosted Zones Dashboard |
+| :---: | :---: |
+| ![Login Screenshot](https://raw.githubusercontent.com/AdityaAnnaboina/ZoneForge/main/frontend/public/favicon.ico) | ![Dashboard Screenshot](https://raw.githubusercontent.com/AdityaAnnaboina/ZoneForge/main/frontend/public/favicon.ico) |
+
+---
+
+## ✨ Features
+
+### 🔐 Authentication & Security
+* **Mocked AWS IAM Session**: Secure login/logout using standard credentials.
+* **JWT Cookie Session Persistence**: Stateless authentication utilizing secure, HTTP-only cookie signing.
+* **Edge-Level Route Guards**: Next.js middleware intercepts requests at the network edge, blocking unauthenticated access to the console.
+
+### 📁 Hosted Zone Management
+* **Full CRUD Lifecycle**: Create, view, search, and delete Public and Private hosted zones.
+* **Metadata Trackers**: Automatic creation and update timestamps with description/comment fields.
+* **Automatic Record Counters**: Seamless, real-time synchronization of zone record counts upon record creation or deletion.
+
+### ⚙️ DNS Record Management
+* **Comprehensive Record Types**: Support for **`A`**, **`AAAA`**, **`CNAME`**, **`TXT`**, **`MX`**, **`NS`**, **`PTR`**, **`SRV`**, and **`CAA`** records.
+* **Multiline Values**: Support for entering multiple IP addresses or text strings per record.
+* **Route 53 Specific Fields**: Configuration of Time-to-Live (TTL) values and Routing Policies (Simple, Weighted, etc.).
+
+### 🎨 Route 53 Experience
+* **AWS Console Theme**: Replicated color schemes (AWS slate `#0f1923` and accent orange `#FF9900`).
+* **Advanced Tables**: Scrollable tables with pagination, search querying, and type filtering.
+* **Interactive Modals**: Seamless creation and deletion modals with confirm-input safety checks (e.g., typing the zone name to confirm deletion).
+
+---
+
+## 🏗️ Architecture & Request Flow
+
+The monorepo connects three distinct layers: Next.js (Client), FastAPI (Application Server), and a SQL Datastore.
+
+### System Architecture
 ```mermaid
 graph TD
     subgraph Frontend [Next.js 14 Frontend]
@@ -56,246 +86,225 @@ graph TD
     F -->|CRUD Actions & Cascades| G
 ```
 
-### Data Flow
-1. **User Authentication**: The user logs in via the login form. The server returns a JWT access token which the client-side Zustand store serializes and writes to a cookie named `"route53-auth"`.
-2. **Edge Route Protection**: Next.js Edge middleware parses the cookie to enforce access control. If the cookie/token is absent, the user is redirected to `/login`.
-3. **API Client Integration**: The Axios `apiClient` automatically intercepts outbound requests to attach the token under the HTTP `Authorization: Bearer <token>` header.
-4. **Backend Token Validation**: FastAPI checks the signature and expiration (24h validity) on all protected routes, raising a `401 Unauthorized` exception if invalid or expired.
-5. **Data Persistence**: Changes are committed to a local SQLite database (`route53.db`) using SQLModel.
+### Authentication Request Flow
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Client Browser
+    participant Mid as Next.js Middleware
+    participant API as FastAPI Backend
+    participant DB as Database
 
----
+    User->>Mid: Request /hosted-zones page
+    alt No JWT Cookie Present
+        Mid-->>User: Redirect to /login
+    else Valid JWT Cookie Present
+        Mid-->>User: Allow Page Render
+    end
 
-## Database Schema
-
-The database consists of three SQLModel tables:
-
-### 1. `users` Table
-- `id`: `Integer`, Primary Key, Autoincrement
-- `username`: `String(50)`, Unique, Indexed, Not Null
-- `password_hash`: `String`, Not Null
-- `created_at`: `DateTime`, Defaults to UTC now
-
-### 2. `hosted_zones` Table
-- `id`: `String(UUID)`, Primary Key
-- `name`: `String(253)`, Indexed, Not Null
-- `type`: `String`, Defaults to `"Public"` (Must be `"Public"` or `"Private"`)
-- `comment`: `String(256)`, Optional
-- `record_count`: `Integer`, Defaults to `0`
-- `created_at`: `DateTime`, Defaults to UTC now
-- `updated_at`: `DateTime`, Defaults to UTC now
-
-### 3. `dns_records` Table
-- `id`: `String(UUID)`, Primary Key
-- `hosted_zone_id`: `String(UUID)`, Foreign Key referencing `hosted_zones.id` (Cascades on delete)
-- `name`: `String(253)`, Indexed, Not Null
-- `type`: `String`, Not Null (Must be `A`, `AAAA`, `CNAME`, etc.)
-- `ttl`: `Integer`, Not Null (Between `0` and `2147483647`)
-- `value`: `String`, Not Null (Supports multi-line inputs)
-- `routing_policy`: `String`, Defaults to `"Simple"` (Must be `Simple`, `Weighted`, etc.)
-- `comment`: `String(256)`, Optional
-- `created_at`: `DateTime`, Defaults to UTC now
-- `updated_at`: `DateTime`, Defaults to UTC now
-
----
-
-## API Reference
-
-### Authentication
-| Method | Endpoint | Description | Auth Required |
-| :--- | :--- | :--- | :--- |
-| **POST** | `/api/auth/login` | Login and obtain JWT token | No |
-| **POST** | `/api/auth/logout` | Clear user session cookie | Yes |
-| **GET** | `/api/auth/me` | Fetch active user information | Yes |
-
-### Hosted Zones
-| Method | Endpoint | Description | Auth Required |
-| :--- | :--- | :--- | :--- |
-| **GET** | `/api/hosted-zones` | List hosted zones (paginated, with search + type filters) | Yes |
-| **GET** | `/api/hosted-zones/{id}` | Fetch hosted zone details by ID | Yes |
-| **POST** | `/api/hosted-zones` | Create a new hosted zone | Yes |
-| **PUT** | `/api/hosted-zones/{id}` | Update type and comments of a hosted zone | Yes |
-| **DELETE** | `/api/hosted-zones/{id}` | Delete hosted zone and cascade delete its records | Yes |
-
-### DNS Records
-| Method | Endpoint | Description | Auth Required |
-| :--- | :--- | :--- | :--- |
-| **GET** | `/api/hosted-zones/{zone_id}/records` | List DNS records (paginated, with search + type filters) | Yes |
-| **GET** | `/api/hosted-zones/{zone_id}/records/{id}`| Fetch a single DNS record details | Yes |
-| **POST** | `/api/hosted-zones/{zone_id}/records` | Create a new DNS record | Yes |
-| **PUT** | `/api/hosted-zones/{zone_id}/records/{id}` | Update an existing DNS record | Yes |
-| **DELETE** | `/api/hosted-zones/{zone_id}/records/{id}`| Delete a DNS record | Yes |
-
----
-
-## Setup Instructions
-
-### Prerequisites
-- **Node.js** (v18.0.0 or higher) and **npm**
-- **Python** (v3.9.0 or higher)
-
-### Backend Setup
-1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
-2. Create and activate a Python virtual environment:
-   ```bash
-   python -m venv venv
-   # On Windows (PowerShell):
-   .\venv\Scripts\Activate.ps1
-   # On Linux/macOS:
-   source venv/bin/activate
-   ```
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. Run the backend development server:
-   ```bash
-   uvicorn main:app --reload --port 8000
-   ```
-* Backend runs at **http://localhost:8000**
-* Interactive API Documentation runs at **http://localhost:8000/docs** (Swagger UI)
-
-### Frontend Setup
-1. Navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
-2. Install npm dependencies:
-   ```bash
-   npm install
-   ```
-3. Configure the environment variables:
-   ```bash
-   cp .env.local.example .env.local
-   ```
-4. Run the Next.js development server:
-   ```bash
-   npm run dev
-   ```
-* Frontend runs at **http://localhost:3000**
-
-### Default Credentials
-On first start, the database seeds an admin user automatically:
-| Field | Value |
-| :--- | :--- |
-| **Username** | `admin` |
-| **Password** | `admin123` |
-
----
-
-## Project Structure
-
+    User->>API: GET /api/hosted-zones (with Bearer Token)
+    API->>API: Verify JWT Signature & Expiry
+    alt JWT Invalid/Expired
+        API-->>User: 401 Unauthorized (Axios redirects to /login)
+    else JWT Valid
+        API->>DB: Fetch Hosted Zones
+        DB-->>API: Return Records
+        API-->>User: 200 OK (Render Data)
+    end
 ```
+
+---
+
+## 🛠️ Technology Stack
+
+| Layer | Technology | Version | Rationale |
+| :--- | :--- | :--- | :--- |
+| **Frontend** | **Next.js** | `14.x` | Enables App Router, file-system routing, and Edge Middleware. |
+| **State** | **Zustand** | `4.x` | Ultra-lightweight client state management with external store access. |
+| **Queries** | **React Query** | `5.x` | Automated caching, background refetching, and query invalidation. |
+| **Forms** | **React Hook Form** | `7.x` | High-performance form handling with minimal component re-renders. |
+| **Validation**| **Zod** | `3.x` | Runtime schema validation for client inputs. |
+| **Backend** | **FastAPI** | `0.109.x` | High-performance Python framework with native async and OpenAPI docs. |
+| **ORM** | **SQLModel** | `0.0.14` | Combines Pydantic (data parsing) and SQLAlchemy (ORM) into a single model. |
+| **Database** | **PostgreSQL** | `16` | Relational storage for production (Neon). |
+| **Database** | **SQLite** | `3` | Zero-configuration file database for local development. |
+
+---
+
+## 📂 Project Structure
+
+```text
 zoneforge/
-├── backend/
-│   ├── main.py                 # FastAPI Application Entrypoint
-│   ├── database.py             # SQLite Engine, Sessions, and Seeding Setup
-│   ├── dependencies.py         # JWT Tokens and Authentication Dependency Injection
-│   ├── test_api.py             # Integration and API Verification Tests
-│   ├── requirements.txt        # Backend Python Dependencies
-│   ├── models/                 # SQLModel Database Table Definitions
-│   │   ├── user.py
-│   │   ├── hosted_zone.py
-│   │   └── dns_record.py
-│   ├── schemas/                # Pydantic Schemas for Requests and Responses
+├── backend/                    # FastAPI Python Backend
+│   ├── main.py                 # Application entrypoint & CORS config
+│   ├── database.py             # Database engine, session maker, and seeding
+│   ├── dependencies.py         # JWT token signing & auth dependencies
+│   ├── models/                 # SQLModel database tables
+│   │   ├── user.py             # User accounts table
+│   │   ├── hosted_zone.py      # Hosted Zones table
+│   │   └── dns_record.py       # DNS Records table
+│   ├── schemas/                # Pydantic validation schemas
 │   │   ├── auth.py
 │   │   ├── hosted_zones.py
 │   │   └── dns_records.py
-│   └── routes/                 # API Endpoint Route Controllers
-│       ├── auth.py
-│       ├── hosted_zones.py
-│       └── dns_records.py
-├── frontend/
-│   ├── package.json            # Node.js Project Dependencies and Scripts
-│   ├── tailwind.config.ts      # Tailwind CSS Theme and Extensions
-│   ├── next.config.mjs         # Next.js Application Configurations
-│   ├── src/
-│   │   ├── middleware.ts       # Edge Route Protection Middleware
-│   │   ├── types/              # Common TypeScript Types and Interfaces
-│   │   │   └── index.ts
-│   │   ├── lib/                # API Client and React Query Setup
-│   │   │   ├── apiClient.ts
-│   │   │   └── queryClient.ts
-│   │   ├── store/              # Zustand Auth and Layout State Stores
-│   │   │   ├── authStore.ts
-│   │   │   ├── useAuthStore.ts
-│   │   │   └── layoutStore.ts
-│   │   ├── components/         # Layouts, UI Components, and Modals
-│   │   │   ├── ErrorBoundary.tsx
-│   │   │   ├── layout/
-│   │   │   │   ├── Sidebar.tsx
-│   │   │   │   └── TopBar.tsx
-│   │   │   ├── ui/
-│   │   │   │   ├── Badge.tsx
-│   │   │   │   ├── ComingSoon.tsx
-│   │   │   │   ├── ConfirmInput.tsx
-│   │   │   │   ├── EmptyState.tsx
-│   │   │   │   ├── LoadingSkeleton.tsx
-│   │   │   │   ├── Modal.tsx
-│   │   │   │   ├── Notification.tsx
-│   │   │   │   └── Pagination.tsx
-│   │   │   ├── hosted-zones/
-│   │   │   │   ├── CreateHostedZoneModal.tsx
-│   │   │   │   ├── EditHostedZoneModal.tsx
-│   │   │   │   └── DeleteHostedZoneModal.tsx
-│   │   │   └── dns-records/
-│   │   │       ├── CreateRecordModal.tsx
-│   │   │       ├── EditRecordModal.tsx
-│   │   │       └── DeleteRecordModal.tsx
-│   │   └── app/                # Next.js App Router Page Layouts and Loading views
-│   │       ├── layout.tsx      # Root Layout configuration
-│   │       ├── providers.tsx   # Global Client Side Providers
-│   │       ├── loading.tsx     # Global Spinner Loading View
-│   │       ├── not-found.tsx   # Custom 404 Page View
-│   │       ├── login/          # LoginPage View
-│   │       │   └── page.tsx
-│   │       └── (dashboard)/    # Authenticated Console Layout Routes
-│   │           ├── layout.tsx  # Dashboard Layout Shell
-│   │           ├── dashboard/
-│   │           │   └── page.tsx # Dashboard ComingSoon View
-│   │           ├── health-checks/
-│   │           │   └── page.tsx # HealthChecks ComingSoon View
-│   │           ├── traffic-policies/
-│   │           │   └── page.tsx # TrafficPolicies ComingSoon View
-│   │           ├── resolver/
-│   │           │   └── page.tsx # Resolver ComingSoon View
-│   │           ├── profiles/
-│   │           │   └── page.tsx # Profiles ComingSoon View
-│   │           └── hosted-zones/
-│   │               ├── page.tsx # Hosted Zones Management View
-│   │               └── [zoneId]/
-│   │                   ├── page.tsx # DNS Records management view
-│   │                   └── loading.tsx
+│   ├── routes/                 # Endpoint controllers
+│   │   ├── auth.py
+│   │   ├── hosted_zones.py
+│   │   └── dns_records.py
+│   └── requirements.txt        # Python package dependencies
+└── frontend/                   # Next.js TypeScript Frontend
+    ├── src/
+    │   ├── middleware.ts       # Edge route guard middleware
+    │   ├── lib/                # Axios & React Query configurations
+    │   ├── store/              # Zustand auth & layout state stores
+    │   ├── components/         # Reusable UI widgets & Modals
+    │   └── app/                # App Router pages and layouts
+    ├── package.json            # Node.js package manifests
+    └── tailwind.config.ts      # Tailwind styling presets
 ```
 
 ---
 
-## Seeded Data
-Upon first run, the SQLite database is automatically seeded:
-* **1 Admin User**: `admin` (password hashed using `passlib` bcrypt).
-* **3 Sample Hosted Zones**: 
-  - `example.com.` (5 DNS records)
-  - `internal.corp.`
-  - `staging.example.com.`
-* **5 DNS Records for `example.com.`**:
-  - `A` record routing to `192.168.1.1`
-  - `AAAA` record routing to `2001:db8::1`
-  - `CNAME` record routing to `example.com.`
-  - `TXT` record with `"v=spf1 include:example.com ~all"`
-  - `MX` record with `"10 mail.example.com."`
+## ⚙️ Installation & Setup
+
+### Prerequisites
+* **Node.js** (v18.0.0 or higher)
+* **Python** (v3.9.0 to v3.12.x)
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/AdityaAnnaboina/ZoneForge.git
+cd ZoneForge/Zoneforge
+```
+
+### 2. Backend Setup
+```bash
+cd backend
+python -m venv venv
+
+# Activate Virtual Environment
+# On Windows (PowerShell):
+.\venv\Scripts\Activate.ps1
+# On Linux/macOS:
+source venv/bin/activate
+
+# Install Dependencies
+pip install -r requirements.txt
+
+# Run Development Server
+uvicorn main:app --reload --port 8000
+```
+* The backend will run at: **`http://localhost:8000`**
+* Interactive Swagger API Docs: **`http://localhost:8000/docs`**
+
+### 3. Frontend Setup
+```bash
+cd ../frontend
+
+# Install Dependencies
+npm install
+
+# Configure Environment Variables
+cp .env.local.example .env.local
+
+# Run Development Server
+npm run dev
+```
+* The frontend will run at: **`http://localhost:3000`**
 
 ---
 
-## Evaluation Criteria Coverage
+## 💾 Database Information
 
-| Evaluation Criterion | Implementation Details |
-| :--- | :--- |
-| **UI similarity to Route53** | Retains original colors, layouts, badges, side navigation bars, headers, pagination panels, loading skeletons, and interactive modal dialog forms. |
-| **Frontend engineering quality** | Strongly typed TypeScript components, structured Zustand store cookie synchronization, debounced text queries, standard Error Boundary catches, and dynamic routing modules. |
-| **Backend/API design** | Standard FastAPI architectures, proper REST HTTP status responses, robust dependency-injected JWT authentication routines, query filtering, and paginated wrappers. |
-| **Database design** | SQLite integration utilizing SQLModel, UUID primary keys for records and hosted zones, and cascaded delete foreign keys. |
-| **Code quality** | Highly modularized components, unified Axios clients, strict lint guidelines, and zero typescript compile warnings. |
-| **Documentation** | Fully documented monorepo with complete API reference listings, curl execution examples, schemas, and structure maps. |
-| **Completeness** | Full auth guards, complete hosted zones CRUD, complete DNS records CRUD, pagination resets, and functional ComingSoon pages. |
+ZoneForge uses **SQLModel** for its database layer. It is designed to run on **SQLite** locally (persisted as `backend/route53.db`) and automatically switches to **PostgreSQL** in production when the `DATABASE_URL` environment variable is detected.
+
+### Seeding
+On the first application startup, if the database is empty, it automatically seeds:
+* **1 Admin User**: `admin` / `admin123` (password hashed using Bcrypt with 12 rounds).
+* **3 Sample Hosted Zones**: `example.com.`, `internal.corp.`, and `staging.example.com.`.
+* **5 Sample DNS Records**: Initialized under `example.com.` (`A`, `CNAME`, `MX`, `TXT`, `NS`).
+
+---
+
+## 🔌 API Overview
+
+### Authentication
+* `POST /api/auth/login` — Sign in and receive a JWT token.
+* `POST /api/auth/logout` — Revoke the session.
+* `GET /api/auth/me` — Retrieve the current authenticated user.
+
+### Hosted Zones
+* `GET /api/hosted-zones` — List hosted zones (Supports pagination, search, and type filter).
+* `POST /api/hosted-zones` — Create a new hosted zone.
+* `GET /api/hosted-zones/{id}` — Get details for a specific zone.
+* `PUT /api/hosted-zones/{id}` — Update zone comments or type.
+* `DELETE /api/hosted-zones/{id}` — Delete a zone (Cascades and deletes all child DNS records).
+
+### DNS Records
+* `GET /api/hosted-zones/{zone_id}/records` — List records in a zone (Supports pagination and search).
+* `POST /api/hosted-zones/{zone_id}/records` — Create a new DNS record.
+* `PUT /api/hosted-zones/{zone_id}/records/{id}` — Edit a DNS record.
+* `DELETE /api/hosted-zones/{zone_id}/records/{id}` — Delete a DNS record.
+
+<details>
+<summary><b>🔍 Click to view Example API Requests (cURL)</b></summary>
+
+#### Login Request
+```bash
+curl -X 'POST' \
+  'http://localhost:8000/api/auth/login' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "username": "admin",
+  "password": "admin123"
+}'
+```
+
+#### Create Hosted Zone
+```bash
+curl -X 'POST' \
+  'http://localhost:8000/api/hosted-zones' \
+  -H 'Authorization: Bearer <YOUR_JWT_TOKEN>' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "name": "mycompany.com",
+  "type": "Public",
+  "comment": "Corporate main site"
+}'
+```
+</details>
+
+---
+
+## 💡 Technical Design Decisions
+
+* **Zustand + React Query**: Rather than using a heavy global state manager like Redux, client-only UI states (such as active auth session and layout expansion) are managed in Zustand. Server-state caching and background data synchronization are offloaded to React Query.
+* **Next.js Edge Middleware**: Protecting routes on the client side can lead to layout flashes. By checking JWT cookie signatures at the Next.js Middleware layer, we prevent unauthenticated page compilation entirely.
+* **Denormalized Record Counter**: Querying `COUNT(*)` across millions of DNS records in a relational database during a zone list query is extremely expensive. We denormalized this by adding a `record_count` column to the `HostedZone` model, which is updated in $O(1)$ time whenever records are created or deleted.
+
+---
+
+## ⚠️ Known Limitations & Future Improvements
+
+### Limitations
+* **No Live DNS Resolution**: The application acts purely as a management dashboard; it does not bind to port 53 or resolve real-world DNS queries.
+* **Bcrypt 72-Byte Limit**: The underlying `bcrypt` library enforces a maximum password length of 72 bytes.
+
+### Future Roadmap
+1. **BIND File Import/Export**: Allow users to upload standard BIND zone files to populate records in bulk.
+2. **Bulk Record Operations**: Implement multi-select checkboxes to delete or edit multiple DNS records simultaneously.
+3. **CoreDNS/BIND Integration**: Integrate a real DNS resolver daemon in the backend to make the records resolvable on a local network.
+
+---
+
+## 🤝 Contributing & License
+
+### Contributing
+Contributions are welcome! Please fork the repository, make your changes on a feature branch, and submit a Pull Request.
+
+### License
+This project is open-source and licensed under the [MIT License](LICENSE).
+
+### Acknowledgements
+* Inspired by the design and layout of the official **Amazon Web Services (AWS) Route 53** Console.
+* Hosted on **Vercel** (Frontend), **Render** (Backend), and **Neon** (PostgreSQL).
