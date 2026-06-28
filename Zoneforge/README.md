@@ -36,7 +36,25 @@
 
 ## Architecture Overview
 
-![ZoneForge Architecture Diagram](architecture_diagram.svg)
+```mermaid
+graph TD
+    subgraph Frontend [Next.js 14 Frontend]
+        A[React UI Components] -->|React Query| B[Axios API Client]
+        C[Edge Middleware] -->|Checks route53-auth Cookie| A
+    end
+
+    subgraph Backend [FastAPI Backend]
+        D[API Routes] -->|Dependency Injection| E[get_current_user / JWT]
+        D -->|Data Operations| F[SQLModel ORM]
+    end
+
+    subgraph Datastore [Database Layer]
+        G[(PostgreSQL / SQLite)]
+    end
+
+    B -->|HTTP Requests + Bearer Token| D
+    F -->|CRUD Actions & Cascades| G
+```
 
 ### Data Flow
 1. **User Authentication**: The user logs in via the login form. The server returns a JWT access token which the client-side Zustand store serializes and writes to a cookie named `"route53-auth"`.
