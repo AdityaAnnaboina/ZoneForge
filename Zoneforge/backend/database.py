@@ -8,10 +8,19 @@ from models.user import User
 from models.hosted_zone import HostedZone
 from models.dns_record import DNSRecord
 
-sqlite_url = "sqlite:///./route53.db"
+import os
 
-connect_args = {"check_same_thread": False}
-engine = create_engine(sqlite_url, connect_args=connect_args, echo=False)
+database_url = os.getenv("DATABASE_URL", "sqlite:///./route53.db")
+
+# Render/Heroku sometimes provides "postgres://", but SQLAlchemy requires "postgresql://"
+if database_url.startswith("postgres://"):
+    database_url = database_url.replace("postgres://", "postgresql://", 1)
+
+connect_args = {}
+if database_url.startswith("sqlite"):
+    connect_args = {"check_same_thread": False}
+
+engine = create_engine(database_url, connect_args=connect_args, echo=False)
 
 def create_db_and_tables():
     # 1. Creates all tables via SQLModel.metadata.create_all
