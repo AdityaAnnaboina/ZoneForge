@@ -29,11 +29,9 @@ While actual DNS packet resolution is out of scope for this assignment, the proj
 
 ## 📸 Screenshots
 
-*(Mocked layout of the visual interface. Add your actual screenshots here)*
-
 | AWS-Style Login | Hosted Zones Dashboard |
 | :---: | :---: |
-| ![Login Screenshot](https://raw.githubusercontent.com/AdityaAnnaboina/ZoneForge/main/frontend/public/favicon.ico) | ![Dashboard Screenshot](https://raw.githubusercontent.com/AdityaAnnaboina/ZoneForge/main/frontend/public/favicon.ico) |
+| ![Login Screenshot](screenshots/login.png) | ![Dashboard Screenshot](screenshots/dashboard.png) |
 
 ---
 
