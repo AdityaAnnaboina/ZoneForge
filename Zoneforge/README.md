@@ -1,6 +1,11 @@
 # ZoneForge — DNS Management Console
 
-> A functional clone of AWS Route53 built with Next.js, FastAPI, and SQLite
+> A functional clone of AWS Route53 built with Next.js, FastAPI, and PostgreSQL / SQLite
+
+### 🚀 Live Deployments
+* **Frontend Console**: [https://zone-forge.vercel.app/](https://zone-forge.vercel.app/)
+* **Backend REST API**: [https://zoneforge-backend.onrender.com/](https://zoneforge-backend.onrender.com/)
+
 
 ## Features
 - [x] **Full Authentication**: Secure signup, login, and session checks backed by JWT (JSON Web Tokens) cookies and Edge middleware page protection.
