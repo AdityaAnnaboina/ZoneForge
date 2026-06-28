@@ -50,7 +50,7 @@ def create_db_and_tables():
                 name="example.com.",
                 type="Public",
                 comment="Primary domain",
-                record_count=0,
+                record_count=5,  # Set directly to match the seeded records
                 created_at=datetime.utcnow(),
                 updated_at=datetime.utcnow()
             )
@@ -75,6 +75,9 @@ def create_db_and_tables():
             session.add(zone1)
             session.add(zone2)
             session.add(zone3)
+            
+            # Commit the zones first so they exist in the database for foreign keys
+            session.commit()
             
             # Create 5 sample DNS records in example.com.
             dns_records = [
@@ -138,9 +141,6 @@ def create_db_and_tables():
             for record in dns_records:
                 session.add(record)
                 
-            # Update record_count on example.com. to 5 after seeding
-            zone1.record_count = 5
-            
             session.commit()
 
 def get_session() -> Generator[Session, None, None]:
